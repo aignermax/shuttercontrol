@@ -1,0 +1,24 @@
+EESchema-LIBRARY Version 2.3
+#encoding utf-8
+#
+# Steckdose
+#
+DEF Steckdose U 0 40 Y Y 1 F N
+F0 "U" 50 250 60 H V C CNN
+F1 "Steckdose" 50 -400 60 H V C CNN
+F2 "" -100 -350 60 H I C CNN
+F3 "" -100 -350 60 H I C CNN
+DRAW
+C 50 -150 50 0 1 0 N
+C 50 -50 255 0 1 0 N
+C 50 100 50 0 1 0 N
+X N 1 -350 100 200 R 50 50 1 1 I
+X P 2 -400 -50 200 R 50 50 1 1 I
+X PE 3 -350 -200 200 R 50 50 1 1 I
+X PE 4 450 -200 200 L 50 50 1 1 I
+X P 5 500 -50 200 L 50 50 1 1 I
+X N 6 450 100 200 L 50 50 1 1 I
+ENDDRAW
+ENDDEF
+#
+#End Library
