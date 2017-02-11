@@ -36,9 +36,12 @@ minutes = (time*60) % 60
 seconds = (time*3600) % 60
 print("%d:%02d.%02d" % (hours, minutes, seconds))
 
-
+IsAlreadyUp = False
+IsAlreadyDown = False
 #http://raspberrypiguide.de/howtos/raspberry-pi-gpio-how-to/# Dauerschleife
 while 1:
+    if (sun.getSunriseTime( coords )['decimal'] < )
+    # 
     #prüfen ob Sonnenaufgang ist
     #prüfen ob Sonnenuntergang ist
     #prüfen ob RAUF gedrückt ist
