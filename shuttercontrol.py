@@ -1,4 +1,5 @@
 import time 
+#include <wiringPi.h>
 import RPi.GPIO as GPIO
 import datetime
 from Sun import Sun
@@ -38,14 +39,24 @@ print("%d:%02d.%02d" % (hours, minutes, seconds))
 
 IsAlreadyUp = False
 IsAlreadyDown = False
+
+
+def Hochfahren():
+    digitalWrite
+
 #http://raspberrypiguide.de/howtos/raspberry-pi-gpio-how-to/# Dauerschleife
 while 1:
     if (sun.getSunriseTime( coords )['decimal'] < )
-    # 
-    #prüfen ob Sonnenaufgang ist
-    #prüfen ob Sonnenuntergang ist
-    #prüfen ob RAUF gedrückt ist
-    #prüfen ob RUNTER gedrückt ist 
+    # WENN sonnenaufgang AND rollo == unten AND DateTime.Now-DateTimeletztesBedienen < 20 Sekunden -> hochfahren
+    # WENN SonnenUntergang AND Rollo == oben AND DateTime.Now-DateTimeletztesBedienen < 20 sekunden -> runterfahren
+    # WENN ButtonUp == true --> hochfahren(); StartzeitHochfahren = DateTime.Now; GanzRunterfahren = false;
+        # WENN DateTime.Now-StartzeitHochfahren > 5 Sekunden
+        # Ganzhochfahren = true;
+    # wenn ButtonDown == true --> runterfahren
+    # prüfen ob Sonnenaufgang ist
+    # prüfen ob Sonnenuntergang ist
+    # prüfen ob RAUF gedrückt ist
+    # prüfen ob RUNTER gedrückt ist 
 
     #warten
     time.sleep(0.1)
