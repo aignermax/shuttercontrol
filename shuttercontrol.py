@@ -8,6 +8,7 @@ from Sun import Sun
 
 def now ():
     mynow = datetime.datetime.utcnow().time()
+    print "[now]: is : " + mynow
     return 0.0 + mynow.hour + mynow.minute/60 + mynow.second/3600
 
 RELAISOFF = True #yes it is that mixed up with my relais..
