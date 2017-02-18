@@ -6,6 +6,9 @@ from Sun import Sun
 
 #RPI.GPIO Layout verwenden (wie Pin-Nummern)
 
+def now ():
+    mynow = datetime.datetime.utcnow().time()
+    return mynow.hour + mynow.minute/60 + mynow.second/3600
 
 PIN_SWITCH_UP = 7
 PIN_SWITCH_DOWN = 29
@@ -33,6 +36,7 @@ buttonsLocked = False
 alterStatusHochfahren = False
 alterStatusRunterfahren = False
 StartzeitBewegung = 0
+stop = False
 #property GanzHochFahren -> setter -> if oldval == false && newval == true -> HochfahrenZeit = DateTime.Now
 #http://raspberrypiguide.de/howtos/raspberry-pi-gpio-how-to/# Dauerschleife 
 
@@ -40,7 +44,7 @@ while 1:
     time.sleep(0.1)
 
     # Sonnenstand Abfragen 
-    now = datetime.datetime.utcnow().time()
+    now =  now()
     sunrise = SUN.getSunriseTime(COORDS)['decimal']
     sunset = SUN.getSunsetTime(COORDS)['decimal']
     if sunrise < 6.5 - 1:
@@ -64,7 +68,7 @@ while 1:
         if not buttonsLocked:
             if not buttonPressedUp:
                 buttonPressedUp = True
-                StartzeitSwitchUp = datetime.datetime.now().time()
+                StartzeitSwitchUp = now()
             else:
                 hochfahren = True
     else:
@@ -76,7 +80,7 @@ while 1:
         if not buttonsLocked:
             if not buttonPressedDown:
                 buttonPressedDown = True
-                StartzeitSwitchDown = datetime.datetime.now().time()
+                StartzeitSwitchDown = now()
             else:
                 hochfahren = True
     else:
@@ -91,7 +95,7 @@ while 1:
     if hochfahren:
         if not alterStatusHochfahren:
             alterStatusHochfahren = True
-            StartzeitBewegung = datetime.datetime.utcnow().time()
+            StartzeitBewegung = now()
         runterfahren = False
         GPIO.output(PIN_RELAIS_DOWN, GPIO.LOW)
         time.sleep(0.2)
@@ -99,7 +103,7 @@ while 1:
     elif runterfahren:
         if not alterStatusRunterfahren:
             alterStatusRunterfahren = True
-            StartzeitBewegung = datetime.datetime.utcnow().time()
+            StartzeitBewegung = now()
         hochfahren = False
         GPIO.output(PIN_RELAIS_UP, GPIO.LOW)
         time.sleep(0.2)
