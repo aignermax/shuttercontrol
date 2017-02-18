@@ -10,4 +10,5 @@ class SunControll:
     #controls if the rollo should go up
     def isSunGotUpNow(self, time , sunRiseTime):
         if (isSunUp == false)
+            
 
