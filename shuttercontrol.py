@@ -26,7 +26,7 @@ def run():
     #Use GPS Coordinats for morning open and evening close
     COORDS = {'longitude' : 11.581981, 'latitude' : 48.135125}
     SUN = Sun()
-    lastUpDay = 0 # für die sonnenstandAbfrage
+    lastUpDay = 0 # fur die sonnenstandAbfrage
     lastDownDay = 0
     hochfahren = 0
     runterfahren = 0
@@ -73,7 +73,7 @@ def run():
         else:
             buttonPressedUp = False
             if buttonPressedUp and now - StartzeitSwitchUp > 1/60/60 * 20:
-                stop = True # stoppt sofort beim Loslassen, wenn Knopf nur kurz gedrückt wurde.
+                stop = True # stoppt sofort beim Loslassen, wenn Knopf nur kurz gedrueckt wurde.
 
         if GPIO.input(PIN_SWITCH_DOWN):
             if not buttonsLocked:
@@ -85,7 +85,7 @@ def run():
         else:
             buttonPressedDown = False
             if buttonPressedDown and now - StartzeitSwitchDown > 1/60/60 * 20:
-                stop = True # stoppt sofort beim Loslassen, wenn Knopf nur kurz gedrückt wurde.
+                stop = True # stoppt sofort beim Loslassen, wenn Knopf nur kurz gedrueckt wurde.
 
         if not buttonPressedUp and not buttonPressedDown:
             buttonsLocked = False
