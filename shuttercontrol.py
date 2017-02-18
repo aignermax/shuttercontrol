@@ -7,10 +7,13 @@ from Sun import Sun
 #RPI.GPIO Layout verwenden (wie Pin-Nummern)
 
 def now ():
+    """returns the current time in floated hours. 11.5000 means 11 hours, 30 Minutes """
     mynow = datetime.datetime.utcnow().time()
-    print "[now]: is : " + mynow
-    return 0.0 + mynow.hour + mynow.minute/60 + mynow.second/3600
+    output = 0.0 + mynow.hour +(0.0 +  mynow.minute)/60 + (0.0 + mynow.second)/3600
+    # print "now-time: " + str(output)
+    return output
 
+GPIO_PRESSED = False # false means pressed..
 RELAISOFF = True #yes it is that mixed up with my relais..
 RELAISON = False
 PIN_SWITCH_UP = 7
@@ -24,8 +27,8 @@ GPIO.setup(PIN_SWITCH_DOWN,GPIO.IN)# Pin 29 zum runterfahren
 # Relais Schaltungen
 GPIO.setup(PIN_RELAIS_UP, GPIO.OUT) # pin 3 -> rauf
 GPIO.setup(PIN_RELAIS_DOWN, GPIO.OUT) # pin 5 -> runter
-GPIO.output(PIN_RELAIS_UP, False)
-GPIO.output(PIN_RELAIS_DOWN , False)
+GPIO.output(PIN_RELAIS_UP, RELAISOFF) # Relaises auschalten
+GPIO.output(PIN_RELAIS_DOWN , RELAISOFF)
 
 """the always running Loop - controls sunset sunrise and buttons"""
 #Use GPS Coordinats for morning open and evening close
@@ -76,12 +79,13 @@ while 1:
 		print "Sunset detected"
 
     # Taster Abfragen 
-    if GPIO.input(PIN_SWITCH_UP):
-	print "up switch pressed"
+    if GPIO.input(PIN_SWITCH_UP)== GPIO_PRESSED:
+	print "up switch pressed ->Lock: " + str(buttonsLocked)
         if not buttonsLocked:
             if not buttonPressedUp:
                 buttonPressedUp = True
                 StartzeitSwitchUp = now()
+		print "StartzeitSwitchUp set: " + str( StartzeitSwitchUp)
             else:
                 hochfahren = True
 		print "up switch -> Hochfahren Init"
@@ -92,8 +96,8 @@ while 1:
             stop = True # stoppt sofort beim Loslassen, wenn Knopf nur kurz gedrueckt wurde.
 	buttonPressedUp = False
 
-    if GPIO.input(PIN_SWITCH_DOWN):
-	print "down switch pressed"
+    if GPIO.input(PIN_SWITCH_DOWN)==GPIO_PRESSED:
+	print "down switch pressed ->Lock: " + str(buttonsLocked)
         if not buttonsLocked:
             if not buttonPressedDown:
                 buttonPressedDown = True
