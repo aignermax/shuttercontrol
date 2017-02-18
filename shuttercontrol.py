@@ -1,4 +1,5 @@
 import time 
+#include <wiringPi.h>
 import RPi.GPIO as GPIO
 import datetime
 from promise import Promise
@@ -122,4 +123,3 @@ def run():
 
         if now - StartzeitBewegung > 1/60 /60 *20: # nach 20 Sekunden schaltet sich rauf/runter selber ab.
             stop = True
-        
