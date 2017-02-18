@@ -2,7 +2,6 @@ import time
 #include <wiringPi.h>
 import RPi.GPIO as GPIO
 import datetime
-from promise import Promise
 from Sun import Sun
 
 #RPI.GPIO Layout verwenden (wie Pin-Nummern)
