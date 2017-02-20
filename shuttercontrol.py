@@ -79,9 +79,7 @@ while 1:
     #mynow = (sunrise +(0.033333))
     
     if mynow > sunrise:
-        print "mynow > sunrise"
         if mynow < sunrise + 0.0666:
-            print "mynow < sunrise + 0.0666 + " + str(datetime.datetime.today().day) + " " + str(lastUpDay)
             if datetime.datetime.today().day != lastUpDay:
                 lastUpDay = datetime.datetime.today().day
                 hochfahren = True
@@ -106,9 +104,8 @@ while 1:
                     hochfahren = True
 	            print "up switch -> Hochfahren Init"
         else:
-	    print "up switch released. timedif: " + str( mynow - StartzeitSwitchUp)
-            if buttonPressedUp and mynow - StartzeitSwitchUp < 1/60/60 * 20:
-	        print "up switch Stop"
+            if buttonPressedUp and mynow - StartzeitSwitchUp < 1.0/60.0/60.0 * 20.0:
+	        print "up switch Stop -> timedif: " + str( mynow - StartzeitSwitchUp)
                 stop = True # stoppt sofort beim Loslassen, wenn Knopf nur kurz gedrueckt wurde.
 	    buttonPressedUp = False
 
@@ -119,17 +116,17 @@ while 1:
                     buttonPressedDown = True
                     StartzeitSwitchDown = now()
                 else:
-                    hochfahren = True
+                    runterfahren = True
 		    print "down switch --> Runterfahren Init"
         else:
-	    print "down switch released -> timedif: " + str(mynow - StartzeitSwitchDown)
-            if buttonPressedDown and mynow - StartzeitSwitchDown < 1/60/60 * 20:
-	        print "down switch Stop"
+            if buttonPressedDown and mynow - StartzeitSwitchDown < 1.0/60.0/60.0 * 20.0:
+	        print "down switch Stop -> timedif: " + str(mynow - StartzeitSwitchDown)
                 stop = True # stoppt sofort beim Loslassen, wenn Knopf nur kurz gedrueckt wurde.
 	    buttonPressedDown = False
 
-    if not buttonPressedUp and not buttonPressedDown:
+    if (not buttonPressedUp and not buttonPressedDown) and buttonsLocked == True:
         buttonsLocked = False
+        print "set buttonLocked = " + str(buttonsLocked)
 
     # Relais setzen
     if hochfahren:
@@ -169,5 +166,6 @@ while 1:
     else:
         alterStatusStop = False
 
-    if mynow - StartzeitBewegung > 1/60 /60 *20: # nach 20 Sekunden schaltet sich rauf/runter selber ab.
+    if (hochfahren == True or runterfahren == True) and mynow - StartzeitBewegung > 1.0/60.0 /60.0 *20.0: # nach 20 Sekunden schaltet sich rauf/runter selber ab.
+        print "BewegungsMaxTimeout -> bewegung sicher schon fertig"
         stop = True
