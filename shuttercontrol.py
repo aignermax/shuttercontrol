@@ -59,6 +59,8 @@ StartzeitSwitchUp = 0.0
 StartzeitSwitchDown = 0.0
 stop = False
 mynow = 0.0
+sunrise = 0.0
+sunset = 0.0
 
 #property GanzHochFahren -> setter -> if oldval == false && newval == true -> HochfahrenZeit = DateTime.Now
 #http://raspberrypiguide.de/howtos/raspberry-pi-gpio-how-to/# Dauerschleife 
@@ -70,27 +72,29 @@ while 1:
     mynow =  now()
     sunrise = SUN.getSunriseTime(COORDS)['decimal']
     sunset = SUN.getSunsetTime(COORDS)['decimal']
-    sunrise = now()
     if sunrise < 6.5 - 1:
         sunrise = 6.5 - 1 # niemand will vor 6:30 aufgeweckt werden in dem fall, denk ich mal.. das -1 ist die Zeitzohne.
     if sunset > 22 - 1:
         sunset = 22 - 1
-
+    #mynow = (sunrise +(0.033333))
+    
     if mynow > sunrise:
-        if mynow < sunrise + 1/60:
-            if datetime.datetime.now().day != lastUpDay:
-                lastUpDay = datetime.datetime.now().day
+        print "mynow > sunrise"
+        if mynow < sunrise + 0.0666:
+            print "mynow < sunrise + 0.0666 + " + str(datetime.datetime.today().day) + " " + str(lastUpDay)
+            if datetime.datetime.today().day != lastUpDay:
+                lastUpDay = datetime.datetime.today().day
                 hochfahren = True
 		print "Sunrise detected"
     if mynow > sunset:
-        if mynow < sunset + 1/60:
-            if datetime.datetime.now().day != lastDownDay:
-                lastDownDay = datetime.datetime.now().day
+        if mynow < sunset + 0.0666:
+            if datetime.datetime.today().day != lastDownDay:
+                lastDownDay = datetime.datetime.today().day
                 runterfahren = True
 		print "Sunset detected"
 
     # Taster Abfragen 
-    if False:
+    if True:
         if GPIO.input(PIN_SWITCH_UP)== GPIO_PRESSED:
 	    print "up switch pressed ->Lock: " + str(buttonsLocked)
             if not buttonsLocked:
