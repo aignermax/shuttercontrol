@@ -1,8 +1,11 @@
 import time 
+import signal
+import sys
 #include <wiringPi.h>
 import RPi.GPIO as GPIO
 import datetime
 from Sun import Sun
+
 
 #RPI.GPIO Layout verwenden (wie Pin-Nummern)
 
@@ -20,6 +23,13 @@ PIN_SWITCH_UP = 7
 PIN_SWITCH_DOWN = 29
 PIN_RELAIS_UP = 3
 PIN_RELAIS_DOWN = 5
+
+# catch STRG+C command
+def sign_handler(signal,frame):
+    print('you pressed CTRL+C!')
+    GPIO.cleanup()
+    sys.exit(0)
+signal.signal(signal.SIGINT, sign_handler)
 # Taster Rauf und Runter
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(PIN_SWITCH_UP,GPIO.IN)# pin 7 -> Rauf 
@@ -60,6 +70,7 @@ while 1:
     mynow =  now()
     sunrise = SUN.getSunriseTime(COORDS)['decimal']
     sunset = SUN.getSunsetTime(COORDS)['decimal']
+    sunrise = now()
     if sunrise < 6.5 - 1:
         sunrise = 6.5 - 1 # niemand will vor 6:30 aufgeweckt werden in dem fall, denk ich mal.. das -1 ist die Zeitzohne.
     if sunset > 22 - 1:
@@ -79,38 +90,39 @@ while 1:
 		print "Sunset detected"
 
     # Taster Abfragen 
-    if GPIO.input(PIN_SWITCH_UP)== GPIO_PRESSED:
-	print "up switch pressed ->Lock: " + str(buttonsLocked)
-        if not buttonsLocked:
-            if not buttonPressedUp:
-                buttonPressedUp = True
-                StartzeitSwitchUp = now()
-		print "StartzeitSwitchUp set: " + str( StartzeitSwitchUp)
-            else:
-                hochfahren = True
-		print "up switch -> Hochfahren Init"
-    else:
-	print "up switch released. timedif: " + str( mynow - StartzeitSwitchUp)
-        if buttonPressedUp and mynow - StartzeitSwitchUp < 1/60/60 * 20:
-	    print "up switch Stop"
-            stop = True # stoppt sofort beim Loslassen, wenn Knopf nur kurz gedrueckt wurde.
-	buttonPressedUp = False
+    if False:
+        if GPIO.input(PIN_SWITCH_UP)== GPIO_PRESSED:
+	    print "up switch pressed ->Lock: " + str(buttonsLocked)
+            if not buttonsLocked:
+                if not buttonPressedUp:
+                    buttonPressedUp = True
+                    StartzeitSwitchUp = now()
+		    print "StartzeitSwitchUp set: " + str( StartzeitSwitchUp)
+                else:
+                    hochfahren = True
+	            print "up switch -> Hochfahren Init"
+        else:
+	    print "up switch released. timedif: " + str( mynow - StartzeitSwitchUp)
+            if buttonPressedUp and mynow - StartzeitSwitchUp < 1/60/60 * 20:
+	        print "up switch Stop"
+                stop = True # stoppt sofort beim Loslassen, wenn Knopf nur kurz gedrueckt wurde.
+	    buttonPressedUp = False
 
-    if GPIO.input(PIN_SWITCH_DOWN)==GPIO_PRESSED:
-	print "down switch pressed ->Lock: " + str(buttonsLocked)
-        if not buttonsLocked:
-            if not buttonPressedDown:
-                buttonPressedDown = True
-                StartzeitSwitchDown = now()
-            else:
-                hochfahren = True
-		print "down switch --> Runterfahren Init"
-    else:
-	print "down switch released -> timedif: " + str(mynow - StartzeitSwitchDown)
-        if buttonPressedDown and mynow - StartzeitSwitchDown < 1/60/60 * 20:
-	    print "down switch Stop"
-            stop = True # stoppt sofort beim Loslassen, wenn Knopf nur kurz gedrueckt wurde.
-	buttonPressedDown = False
+        if GPIO.input(PIN_SWITCH_DOWN)==GPIO_PRESSED:
+	    print "down switch pressed ->Lock: " + str(buttonsLocked)
+            if not buttonsLocked:
+                if not buttonPressedDown:
+                    buttonPressedDown = True
+                    StartzeitSwitchDown = now()
+                else:
+                    hochfahren = True
+		    print "down switch --> Runterfahren Init"
+        else:
+	    print "down switch released -> timedif: " + str(mynow - StartzeitSwitchDown)
+            if buttonPressedDown and mynow - StartzeitSwitchDown < 1/60/60 * 20:
+	        print "down switch Stop"
+                stop = True # stoppt sofort beim Loslassen, wenn Knopf nur kurz gedrueckt wurde.
+	    buttonPressedDown = False
 
     if not buttonPressedUp and not buttonPressedDown:
         buttonsLocked = False
