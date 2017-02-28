@@ -12,7 +12,7 @@ class Sun:
         return self.calcSunTime( coords, False )
 
     def getCurrentUTC( self ):
-        now = datetime.datetime.now()
+        now = datetime.datetime.utcnow()
         return [ now.day, now.month, now.year ]
 
     def calcSunTime( self, coords, isRiseTime, zenith = 90.8 ):

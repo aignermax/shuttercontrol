@@ -8,7 +8,6 @@ from Sun import Sun
 
 def now ():
     mynow = datetime.datetime.utcnow().time()
-    print "[now]: is : " + mynow
     return 0.0 + mynow.hour + mynow.minute/60 + mynow.second/3600
 
 RELAISOFF = True #yes it is that mixed up with my relais..
@@ -27,7 +26,6 @@ GPIO.setup(PIN_RELAIS_DOWN, GPIO.OUT) # pin 5 -> runter
 GPIO.output(PIN_RELAIS_UP, False)
 GPIO.output(PIN_RELAIS_DOWN , False)
 
-"""the always running Loop - controls sunset sunrise and buttons"""
 #Use GPS Coordinats for morning open and evening close
 COORDS = {'longitude' : 11.581981, 'latitude' : 48.135125}
 SUN = Sun()
@@ -57,10 +55,10 @@ while 1:
     mynow =  now()
     sunrise = SUN.getSunriseTime(COORDS)['decimal']
     sunset = SUN.getSunsetTime(COORDS)['decimal']
-    if sunrise < 6.5 - 1:
-        sunrise = 6.5 - 1 # niemand will vor 6:30 aufgeweckt werden in dem fall, denk ich mal.. das -1 ist die Zeitzohne.
-    if sunset > 22 - 1:
-        sunset = 22 - 1
+    if sunrise < 7 + 1:
+        sunrise = 7 + 1 # niemand will vor 6:30 aufgeweckt werden in dem fall, denk ich mal.. das -1 ist die Zeitzohne.
+    if sunset > 22 + 1:
+        sunset = 22 + 1
 
     if mynow > sunrise:
         if mynow < sunrise + 1/60:
