@@ -105,7 +105,7 @@ while 1:
             if buttonPressedUp and mynow - StartzeitSwitchUp < 1.0/60.0/60.0 * 2.0:
                 print "up switch Stop -> timedif: " + str( mynow - StartzeitSwitchUp)
                 stop = True # stoppt sofort beim Loslassen, wenn Knopf nur kurz gedrueckt wurde.
-	        buttonPressedUp = False
+            buttonPressedUp = False
 
         if GPIO.input(PIN_SWITCH_DOWN)==GPIO_PRESSED:
 	    print "down switch pressed ->Lock: " + str(buttonsLocked)
