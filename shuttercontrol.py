@@ -102,7 +102,7 @@ while 1:
                     hochfahren = True
                     print "up switch -> Hochfahren Init"
         else:
-            if buttonPressedUp and mynow - StartzeitSwitchUp < 1.0/60.0/60.0 * 20.0:
+            if buttonPressedUp and mynow - StartzeitSwitchUp < 1.0/60.0/60.0 * 2.0:
                 print "up switch Stop -> timedif: " + str( mynow - StartzeitSwitchUp)
                 stop = True # stoppt sofort beim Loslassen, wenn Knopf nur kurz gedrueckt wurde.
 	        buttonPressedUp = False
@@ -117,7 +117,9 @@ while 1:
                     runterfahren = True
 		    print "down switch --> Runterfahren Init"
         else:
-            if buttonPressedDown and mynow - StartzeitSwitchDown < 1.0/60.0/60.0 * 20.0:
+            #wenn knopf zwei sekunden gedrückt war wird nicht gestoppt. 
+            # die MaxZeit stoppt in diesem Fall (ganz unten)
+            if buttonPressedDown and mynow - StartzeitSwitchDown < 1.0/60.0/60.0 * 2.0:
                 print "down switch Stop -> timedif: " + str(mynow - StartzeitSwitchDown)
                 stop = True # stoppt sofort beim Loslassen, wenn Knopf nur kurz gedrueckt wurde.
             buttonPressedDown = False
@@ -164,6 +166,6 @@ while 1:
     else:
         alterStatusStop = False
 
-    if (hochfahren == True or runterfahren == True) and mynow - StartzeitBewegung > 1.0/60.0 /60.0 *20.0: # nach 20 Sekunden schaltet sich rauf/runter selber ab.
+    if (hochfahren == True or runterfahren == True) and mynow - StartzeitBewegung > 1.0/60.0 /60.0 *80.0: # nach 20 Sekunden schaltet sich rauf/runter selber ab.
         print "BewegungsMaxTimeout -> bewegung sicher schon fertig"
         stop = True
