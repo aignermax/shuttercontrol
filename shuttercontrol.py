@@ -117,7 +117,7 @@ while 1:
                     runterfahren = True
 		    print "down switch --> Runterfahren Init"
         else:
-            #wenn knopf zwei sekunden gedrückt war wird nicht gestoppt. 
+            #wenn knopf zwei sekunden gedrueckt war wird nicht gestoppt. 
             # die MaxZeit stoppt in diesem Fall (ganz unten)
             if buttonPressedDown and mynow - StartzeitSwitchDown < 1.0/60.0/60.0 * 2.0:
                 print "down switch Stop -> timedif: " + str(mynow - StartzeitSwitchDown)
