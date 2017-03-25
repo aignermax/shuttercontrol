@@ -1,4 +1,5 @@
 import datetime
+import time
 from Sun import Sun
 
 
@@ -17,6 +18,14 @@ SUN = Sun()
 mynow =  now()
 sunrise = SUN.getSunriseTime(COORDS)['decimal']
 sunset = SUN.getSunsetTime(COORDS)['decimal']
+
+def timeZoneOffset():
+    """returns the difference of the timezone and UTC also considering summer time"""
+    is_dst = time.daylight and time.localtime().tm_isdst > 0
+    utc_offset = - (time.altzone if is_dst else time.timezone)
+    return utc_offset /60/60
+
+print "time offset: " + str(now() + timeZoneOffset())
 print sunrise
 print sunset
 print mynow
