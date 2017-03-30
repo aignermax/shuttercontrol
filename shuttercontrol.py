@@ -1,3 +1,4 @@
+import logging
 import time 
 import signal
 import sys
@@ -7,6 +8,11 @@ import datetime
 from Sun import Sun
 
 
+# setup logging 
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(levelname)s %(message)s',
+                    filename='./myapp.log',
+                    filemode='w')
 #RPI.GPIO Layout verwenden (wie Pin-Nummern)
 
 def now ():
@@ -19,7 +25,7 @@ def now ():
 def timeZoneOffset():
     """returns the difference of the timezone and UTC also considering summer time"""
     is_dst = time.daylight and time.localtime().tm_isdst > 0
-    utc_offset = - (time.altzone if is_dst else time.timezone)
+    utc_offset = 0.0 - (time.altzone if is_dst else time.timezone)
     return utc_offset /60/60
 
 GPIO_PRESSED = False # false means pressed..
@@ -66,9 +72,13 @@ stop = False
 mynow = 0.0
 sunrise = 0.0
 sunset = 0.0
+debugcounter = 0
+minhochzeit = 6.7
 
 #property GanzHochFahren -> setter -> if oldval == false && newval == true -> HochfahrenZeit = DateTime.Now
 #http://raspberrypiguide.de/howtos/raspberry-pi-gpio-how-to/# Dauerschleife 
+print "start shuttercontrol. Welcome :)"
+logging.info("start shuttercontrol. Welcome :)")
 
 while 1:
     time.sleep(0.1)
@@ -77,8 +87,18 @@ while 1:
     mynow =  now()
     sunrise = SUN.getSunriseTime(COORDS)['decimal']
     sunset = SUN.getSunsetTime(COORDS)['decimal']
-    if sunrise < 6.7 - timeZoneOffset():
-        sunrise = 6.7 - timeZoneOffset() # niemand will vor 7 aufgeweckt werden in dem fall, denk ich mal.. das -1 ist die Zeitzohne.
+    if datetime.datetime.today().weekday() > 4:
+        minhochzeit = 8.0
+    else:
+        minhochzeit = 6.7
+    debugcounter = debugcounter +1
+
+    # werte anzeigen
+    if debugcounter % 10000 == 0:
+        logging.info( "sunrise " + str(sunrise) + " minhoch " + str(minhochzeit) + " timezoneoff " + str(timeZoneOffset()) + " mynow " +  str(mynow) + " min - timeZ " + str(minhochzeit-timeZoneOffset()) + " dayOW: " + str(datetime.datetime.today().weekday()) )
+
+    if (sunrise < minhochzeit - timeZoneOffset()):
+        sunrise = minhochzeit - timeZoneOffset() # niemand will vor 7 aufgeweckt werden in dem fall, denk ich mal.. das -1 ist die Zeitzohne.
     if sunset > 22 - timeZoneOffset():
         sunset = 22 - timeZoneOffset()
 
@@ -87,56 +107,56 @@ while 1:
             if datetime.datetime.today().day != lastUpDay:
                 lastUpDay = datetime.datetime.today().day
                 hochfahren = True
-                print "Sunrise detected"
+                logging.info( "Sunrise detected")
     if mynow > sunset:
         if mynow < sunset + 0.0666:
             if datetime.datetime.today().day != lastDownDay:
                 lastDownDay = datetime.datetime.today().day
                 runterfahren = True
-                print "Sunset detected"
+                logging.info("Sunset detected")
 
     # Taster Abfragen 
     if True:
         if GPIO.input(PIN_SWITCH_UP)== GPIO_PRESSED:
-            print "up switch pressed ->Lock: " + str(buttonsLocked)
+            logging.info("up switch pressed ->Lock: " + str(buttonsLocked))
             if not buttonsLocked:
                 if not buttonPressedUp:
                     buttonPressedUp = True
                     StartzeitSwitchUp = now()
-                    print "StartzeitSwitchUp set: " + str( StartzeitSwitchUp)
+                    logging.info("StartzeitSwitchUp set: " + str( StartzeitSwitchUp))
                 else:
                     hochfahren = True
-                    print "up switch -> Hochfahren Init"
+                    logging.info("up switch -> Hochfahren Init")
         else:
             if buttonPressedUp and mynow - StartzeitSwitchUp < 1.0/60.0/60.0 * 2.0:
-                print "up switch Stop -> timedif: " + str( mynow - StartzeitSwitchUp)
+                logging.info( "up switch Stop -> timedif: " + str( mynow - StartzeitSwitchUp))
                 stop = True # stoppt sofort beim Loslassen, wenn Knopf nur kurz gedrueckt wurde.
             buttonPressedUp = False
 
         if GPIO.input(PIN_SWITCH_DOWN)==GPIO_PRESSED:
-	    print "down switch pressed ->Lock: " + str(buttonsLocked)
+	    logging.info( "down switch pressed ->Lock: " + str(buttonsLocked))
             if not buttonsLocked:
                 if not buttonPressedDown:
                     buttonPressedDown = True
                     StartzeitSwitchDown = now()
                 else:
                     runterfahren = True
-		    print "down switch --> Runterfahren Init"
+		    logging.info("down switch --> Runterfahren Init")
         else:
             #wenn knopf zwei sekunden gedrueckt war wird nicht gestoppt. 
             # die MaxZeit stoppt in diesem Fall (ganz unten)
             if buttonPressedDown and mynow - StartzeitSwitchDown < 1.0/60.0/60.0 * 2.0:
-                print "down switch Stop -> timedif: " + str(mynow - StartzeitSwitchDown)
+                logging.info("down switch Stop -> timedif: " + str(mynow - StartzeitSwitchDown))
                 stop = True # stoppt sofort beim Loslassen, wenn Knopf nur kurz gedrueckt wurde.
             buttonPressedDown = False
 
     if (not buttonPressedUp and not buttonPressedDown) and buttonsLocked == True:
         buttonsLocked = False
-        print "set buttonLocked = " + str(buttonsLocked)
+        logging.info("set buttonLocked = " + str(buttonsLocked))
 
     # Relais setzen
     if hochfahren:
-        print "Go Up"
+        logging.info("Go Up")
         if not alterStatusHochfahren:
             alterStatusHochfahren = True
             StartzeitBewegung = now()
@@ -145,7 +165,7 @@ while 1:
         time.sleep(0.2)
         GPIO.output(PIN_RELAIS_UP, RELAISON)
     elif runterfahren:
-        print "Go Down"
+        logging.info("Go Down")
         if not alterStatusRunterfahren:
             alterStatusRunterfahren = True
             StartzeitBewegung = now()
@@ -162,7 +182,7 @@ while 1:
     if stop:
         if alterStatusStop == False:
             alterStatusStop = True
-    	    print "stop"
+    	    logging.info("stop")
         stop = False
         GPIO.output(PIN_RELAIS_DOWN, RELAISOFF)
         GPIO.output(PIN_RELAIS_UP, RELAISOFF)
@@ -173,5 +193,5 @@ while 1:
         alterStatusStop = False
 
     if (hochfahren == True or runterfahren == True) and mynow - StartzeitBewegung > 1.0/60.0 /60.0 *80.0: # nach 20 Sekunden schaltet sich rauf/runter selber ab.
-        print "BewegungsMaxTimeout -> bewegung sicher schon fertig"
+        logging.info("BewegungsMaxTimeout -> bewegung sicher schon fertig")
         stop = True
