@@ -11,7 +11,7 @@ from Sun import Sun
 # setup logging 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(message)s',
-                    filename='./shuttercontrol.log',
+                    filename='/home/pi/Documents/Projects/rolladensteuerung/shuttercontrol/LOGshuttercontrol.log',
                     filemode='w')
 #RPI.GPIO Layout verwenden (wie Pin-Nummern)
 
@@ -94,8 +94,8 @@ while 1:
     debugcounter = debugcounter +1
 
     # werte anzeigen
-    if debugcounter % 20 == 0:
-        logging.info( "sunrise " + str(sunrise) + " minhoch " + str(minhochzeit) + " timezoneoff " + str(timeZoneOffset()) + " mynow " +  str(mynow) + " min - timeZ " + str(minhochzeit-timeZoneOffset()) + " dayOW: " + str(datetime.datetime.today().weekday()) )
+    if debugcounter % 200 == 0:
+        logging.info( "sunrise " + str(sunrise) + " minhoch " + str(minhochzeit) + " timezoneoff " + str(timeZoneOffset()) + " mynow " +  str(mynow) + " 6.7 - timeZ " + str(6.7-timeZoneOffset()) + " dayOW: " + str(datetime.datetime.today().weekday()))
 
     if sunrise < minhochzeit:
         sunrise = minhochzeit # niemand will vor 7 aufgeweckt werden in dem fall, denk ich mal.. das -1 ist die Zeitzohne.
@@ -108,14 +108,14 @@ while 1:
                 lastUpDay = datetime.datetime.today().day
                 GPIO.output(PIN_RELAIS_DOWN, RELAISOFF)
                 hochfahren = True
-                logging.info( "Sunrise detected")
+                logging.info( "Sunrise detected " + sunrise + " now: " + mynow)
     if mynow > sunset:
         if mynow < sunset + 0.0666:
             if datetime.datetime.today().day != lastDownDay:
                 lastDownDay = datetime.datetime.today().day
                 GPIO.output(PIN_RELAIS_UP, RELAISOFF)
                 runterfahren = True
-                logging.info("Sunset detected")
+                logging.info("Sunset detected " + sunset + " now: " + sunset)
 
     # Taster Abfragen 
     if True:
