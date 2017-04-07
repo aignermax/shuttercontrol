@@ -11,7 +11,7 @@ from Sun import Sun
 # setup logging 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(message)s',
-                    filename='./myapp.log',
+                    filename='./shuttercontrol.log',
                     filemode='w')
 #RPI.GPIO Layout verwenden (wie Pin-Nummern)
 
@@ -26,7 +26,7 @@ def timeZoneOffset():
     """returns the difference of the timezone and UTC also considering summer time"""
     is_dst = time.daylight and time.localtime().tm_isdst > 0
     utc_offset = 0.0 - (time.altzone if is_dst else time.timezone)
-    return utc_offset /60/60
+    return utc_offset /60.0/60.0
 
 GPIO_PRESSED = False # false means pressed..
 RELAISOFF = True #yes it is that mixed up with my relais..
@@ -55,8 +55,8 @@ GPIO.output(PIN_RELAIS_DOWN , RELAISOFF)
 #Use GPS Coordinats for morning open and evening close
 COORDS = {'longitude' : 11.581981, 'latitude' : 48.135125}
 SUN = Sun()
-lastUpDay = 0 # fur die sonnenstandAbfrage
-lastDownDay = 0
+lastUpDay = datetime.datetime.today().day -1 # fur die sonnenstandAbfrage
+lastDownDay = datetime.datetime.today().day -1
 hochfahren = 0
 runterfahren = 0
 buttonPressedUp = False
@@ -88,30 +88,32 @@ while 1:
     sunrise = SUN.getSunriseTime(COORDS)['decimal']
     sunset = SUN.getSunsetTime(COORDS)['decimal']
     if datetime.datetime.today().weekday() > 4:
-        minhochzeit = 8.0
+        minhochzeit = (8.0 - timeZoneOffset())
     else:
-        minhochzeit = 6.7
+        minhochzeit = (6.70 - (timeZoneOffset()*2.0))
     debugcounter = debugcounter +1
 
     # werte anzeigen
-    if debugcounter % 10000 == 0:
+    if debugcounter % 20 == 0:
         logging.info( "sunrise " + str(sunrise) + " minhoch " + str(minhochzeit) + " timezoneoff " + str(timeZoneOffset()) + " mynow " +  str(mynow) + " min - timeZ " + str(minhochzeit-timeZoneOffset()) + " dayOW: " + str(datetime.datetime.today().weekday()) )
 
-    if (sunrise < minhochzeit - timeZoneOffset()):
-        sunrise = minhochzeit - timeZoneOffset() # niemand will vor 7 aufgeweckt werden in dem fall, denk ich mal.. das -1 ist die Zeitzohne.
-    if sunset > 22 - timeZoneOffset():
-        sunset = 22 - timeZoneOffset()
+    if sunrise < minhochzeit:
+        sunrise = minhochzeit # niemand will vor 7 aufgeweckt werden in dem fall, denk ich mal.. das -1 ist die Zeitzohne.
+    if sunset > 22.0 - timeZoneOffset():
+        sunset = (22.0 - timeZoneOffset())
 
     if mynow > sunrise:
         if mynow < sunrise + 0.0666:
             if datetime.datetime.today().day != lastUpDay:
                 lastUpDay = datetime.datetime.today().day
+                GPIO.output(PIN_RELAIS_DOWN, RELAISOFF)
                 hochfahren = True
                 logging.info( "Sunrise detected")
     if mynow > sunset:
         if mynow < sunset + 0.0666:
             if datetime.datetime.today().day != lastDownDay:
                 lastDownDay = datetime.datetime.today().day
+                GPIO.output(PIN_RELAIS_UP, RELAISOFF)
                 runterfahren = True
                 logging.info("Sunset detected")
 
