@@ -1,10 +1,15 @@
 import datetime
 import time
+import pytz
 from Sun import Sun
 
 
-def now ():
+def timezonealt ():
     """returns the current time in floated hours. 11.5000 means 11 hours, 30 Minutes """
+    la = pytz.timezone('Europe/Berlin')
+    local_time = now.astimezone(la)
+
+def now ():
     mynow = datetime.datetime.utcnow().time()
     output = 0.0 + mynow.hour +(0.0 +  mynow.minute)/60 + (0.0 + mynow.second)/3600
     # print "now-time: " + str(output)
@@ -22,10 +27,11 @@ sunset = SUN.getSunsetTime(COORDS)['decimal']
 def timeZoneOffset():
     """returns the difference of the timezone and UTC also considering summer time"""
     is_dst = time.daylight and time.localtime().tm_isdst > 0
-    utc_offset =0.0 - (time.altzone if is_dst else time.timezone)
-    return utc_offset /60/60
+    utc_offset = 0.0 - (time.altzone if is_dst else time.timezone)
+    return utc_offset /60.0/60.0
+mytime = 0.0
+for x in range (0,1000):
+    mytime = timeZoneOffset()
 
-print "time total: " + str(now() + timeZoneOffset()) + " offset: " + str(timeZoneOffset())
-print sunrise
-print sunset
-print mynow
+print "mytime: " + str(timezonealt())
+
